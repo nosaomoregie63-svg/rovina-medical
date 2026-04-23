@@ -1,0 +1,21 @@
+{
+  "name": "Rovina Medical Diagnostic Services",
+  "short_name": "Rovina Medical",
+  "description": "Quality diagnostic healthcare services in Lagos, Nigeria",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1E3A8A",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+# Rovina Medical Diagnostic Services - Robots.txt
+
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /patient/
+
+Sitemap: https://rovinamedical.ng/sitemap.xml
