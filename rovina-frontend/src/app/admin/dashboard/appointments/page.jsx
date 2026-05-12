@@ -32,15 +32,29 @@ export default function AppointmentsPage() {
   const [statusFilter, setStatusFilter] = useState("all");
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const userData = localStorage.getItem("user");
+    const token = localStorage.getItem("adminToken");
+    const userData = localStorage.getItem("adminUser");
 
-    if (!token || !userData) {
+    if (
+      !token ||
+      !userData ||
+      userData === "undefined" ||
+      userData === "null"
+    ) {
       router.push("/admin/login");
       return;
     }
 
-    setUser(JSON.parse(userData));
+    try {
+      setUser(JSON.parse(userData));
+    } catch (error) {
+      console.error("Error parsing admin user data:", error);
+      localStorage.removeItem("adminToken");
+      localStorage.removeItem("adminUser");
+      router.push("/admin/login");
+      return;
+    }
+
     fetchAppointments();
   }, []);
 
@@ -51,14 +65,14 @@ export default function AppointmentsPage() {
   const fetchAppointments = async () => {
     try {
       const API_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-      const token = localStorage.getItem("token");
+        import.meta.env.VITE_API_URL || "http://localhost:5001/api";
+      const token = localStorage.getItem("adminToken");
 
       const response = await axios.get(`${API_URL}/appointments`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      setAppointments(response.data.data || []);
+      setAppointments(response.data.data || response.data || []);
     } catch (error) {
       toast.error("Failed to load appointments");
     } finally {
@@ -86,22 +100,33 @@ export default function AppointmentsPage() {
     setFilteredAppointments(filtered);
   };
 
-  const updateAppointmentStatus = async (id, status) => {
+  const handleStatusUpdate = async (appointmentId, newStatus) => {
+    if (
+      !confirm(
+        `Are you sure you want to ${newStatus} this appointment? The patient will be notified via email and SMS.`,
+      )
+    ) {
+      return;
+    }
+
     try {
       const API_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-      const token = localStorage.getItem("token");
+        import.meta.env.VITE_API_URL || "http://localhost:5001/api";
+      const token = localStorage.getItem("adminToken");
 
       await axios.patch(
-        `${API_URL}/appointments/${id}/status`,
-        { status },
+        `${API_URL}/appointments/${appointmentId}/status`,
+        { status: newStatus },
         { headers: { Authorization: `Bearer ${token}` } },
       );
 
-      toast.success(`Appointment ${status}`);
+      toast.success(
+        `Appointment ${newStatus} successfully! Patient has been notified.`,
+      );
       fetchAppointments();
     } catch (error) {
-      toast.error("Failed to update appointment");
+      toast.error("Failed to update appointment status");
+      console.error(error);
     }
   };
 
@@ -350,42 +375,39 @@ export default function AppointmentsPage() {
                               <>
                                 <button
                                   onClick={() =>
-                                    updateAppointmentStatus(
+                                    handleStatusUpdate(
                                       appointment._id,
                                       "approved",
                                     )
                                   }
-                                  className="p-2 bg-success text-white rounded hover:bg-green-700 transition"
-                                  title="Approve"
+                                  className="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-xs font-semibold"
                                 >
-                                  <Check className="w-4 h-4" />
+                                  ✓ Approve
                                 </button>
                                 <button
                                   onClick={() =>
-                                    updateAppointmentStatus(
+                                    handleStatusUpdate(
                                       appointment._id,
                                       "cancelled",
                                     )
                                   }
-                                  className="p-2 bg-danger text-white rounded hover:bg-red-700 transition"
-                                  title="Cancel"
+                                  className="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-xs font-semibold"
                                 >
-                                  <XCircle className="w-4 h-4" />
+                                  ✗ Reject
                                 </button>
                               </>
                             )}
                             {appointment.status === "approved" && (
                               <button
                                 onClick={() =>
-                                  updateAppointmentStatus(
+                                  handleStatusUpdate(
                                     appointment._id,
                                     "completed",
                                   )
                                 }
-                                className="p-2 bg-primary text-white rounded hover:bg-blue-900 transition"
-                                title="Mark as Completed"
+                                className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-xs font-semibold"
                               >
-                                <Check className="w-4 h-4" />
+                                ✓ Complete
                               </button>
                             )}
                           </div>

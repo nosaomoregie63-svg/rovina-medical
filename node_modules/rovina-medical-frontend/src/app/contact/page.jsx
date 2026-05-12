@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Phone, Mail, MapPin, Clock, Send } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, Send, MessageCircle } from "lucide-react";
 import { toast } from "react-toastify";
 
 export default function Contact() {
@@ -248,90 +248,9 @@ export default function Contact() {
         </div>
       </section>
 
-      {/* Map Section */}
-      <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-8">
-            Find Us on the Map
-          </h2>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Head Office Map */}
-            <div>
-              <h3 className="text-xl font-semibold mb-3 text-primary">
-                Head Office - Satellite Town
-              </h3>
-              <div className="rounded-xl overflow-hidden shadow-lg h-64">
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.3897544776814!2d3.2962841!3d6.4641665!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNsKwMjcnNTEuMCJOIDPCsDE3JzQ2LjYiRQ!5e0!3m2!1sen!2sng!4v1234567890"
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  allowFullScreen=""
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  title="Head Office Location"
-                ></iframe>
-              </div>
-              <p className="text-sm text-gray-600 mt-2">
-                Roving House, 3 Mobil Road, Ile Epo Bus Stop
-              </p>
-            </div>
-
-            {/* Abule Ado Branch Map */}
-            <div>
-              <h3 className="text-xl font-semibold mb-3 text-primary">
-                Abule Ado Branch
-              </h3>
-              <div className="rounded-xl overflow-hidden shadow-lg h-64">
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.3897544776814!2d3.3262841!3d6.4541665!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNsKwMjcnMTUuMCJOIDPCsDE5JzM0LjYiRQ!5e0!3m2!1sen!2sng!4v1234567890"
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  allowFullScreen=""
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  title="Abule Ado Branch Location"
-                ></iframe>
-              </div>
-              <p className="text-sm text-gray-600 mt-2">
-                Plot 446 Old Ojo Road, Christ-in-me Plaza
-              </p>
-            </div>
-
-            {/* Olodi Apapa Branch Map */}
-            <div>
-              <h3 className="text-xl font-semibold mb-3 text-primary">
-                Olodi Apapa Branch
-              </h3>
-              <div className="rounded-xl overflow-hidden shadow-lg h-64">
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.3897544776814!2d3.3562841!3d6.4441665!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNsKwMjYnMzkuMCJOIDPCsMIxMycyMi42IkU!5e0!3m2!1sen!2sng!4v1234567890"
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  allowFullScreen=""
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  title="Olodi Apapa Branch Location"
-                ></iframe>
-              </div>
-              <p className="text-sm text-gray-600 mt-2">
-                Plot 174 Kirikiri Road, People's bus stop
-              </p>
-            </div>
-          </div>
-
-          <div className="text-center mt-8 bg-white rounded-xl p-6 shadow-md">
-            <p className="text-gray-700">
-              <strong>Note:</strong> All our branches are open Monday -
-              Saturday. For directions or more information, please call{" "}
-              <strong className="text-primary">07086986677</strong>
-            </p>
-          </div>
-        </div>
-      </section>
     </div>
   );
 }
+
+export default Contact;
+

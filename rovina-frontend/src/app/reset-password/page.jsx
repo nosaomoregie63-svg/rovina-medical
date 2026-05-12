@@ -45,7 +45,7 @@ export default function ResetPassword() {
 
     try {
       const API_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+        import.meta.env.VITE_API_URL || "http://localhost:5001/api";
       const response = await axios.put(
         `${API_URL}/patients/reset-password/${token}`,
         { password: formData.password },
@@ -203,3 +203,5 @@ export default function ResetPassword() {
     </div>
   );
 }
+
+

@@ -17,6 +17,7 @@ import {
   ArrowRight,
   MessageCircle,
   Play,
+  Building2,
 } from "lucide-react";
 
 export default function Home() {
@@ -454,7 +455,7 @@ export default function Home() {
       </section>
 
       {/* Locations */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-20 bg-gray-50 relative">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <p className="text-secondary font-bold text-sm uppercase tracking-wider mb-3">
@@ -469,56 +470,145 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {[
-              {
-                name: "Head Office",
-                location: "Satellite Town",
-                address: "Roving House, 3 Mobil Road, Ile Epo Bus Stop",
-                phone: "070 8698 6677 | 080 3359 0577",
-                featured: true,
-              },
-              {
-                name: "Abule Ado Branch",
-                location: "Abule Ado",
-                address: "Plot 446 Old Ojo Road, Christ-in-me Plaza",
-                phone: "080 6090 9199",
-                featured: false,
-              },
-              {
-                name: "Olodi Apapa Branch",
-                location: "Olodi Apapa",
-                address: "Plot 174 Kirikiri Road, People's bus stop",
-                phone: "091 3922 1666",
-                featured: false,
-              },
-            ].map((branch, index) => (
-              <div
-                key={index}
-                className={`bg-white border-2 ${branch.featured ? "border-secondary" : "border-gray-200"} rounded-xl p-6 hover:shadow-xl transition relative`}
-              >
-                {branch.featured && (
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-secondary text-white text-xs font-bold px-4 py-1 rounded-full">
-                    MAIN BRANCH
-                  </div>
-                )}
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4 text-primary">
-                  <MapPin className="w-6 h-6" />
+            {/* Head Office */}
+            <div className="bg-white border-2 border-secondary rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative">
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-secondary text-white text-xs font-bold px-4 py-1 rounded-full z-10">
+                MAIN BRANCH
+              </div>
+
+              {/* Mini Map */}
+              <div className="h-48 bg-gray-100 overflow-hidden">
+                <iframe
+                  src="https://maps.google.com/maps?q=Roving%20House,%203%20Mobil%20Road,%20Ile%20Epo%20Bus%20Stop,%20Satellite%20Town,%20Lagos&t=&z=14&ie=UTF8&iwloc=&output=embed"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  loading="lazy"
+                  title="Head Office Map"
+                ></iframe>
+              </div>
+
+              <div className="p-6">
+                <div className="flex items-center space-x-2 mb-3">
+                  <Building2 className="w-5 h-5 text-primary" />
+                  <h3 className="text-xl font-bold text-gray-900">
+                    Head Office
+                  </h3>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  {branch.name}
-                </h3>
-                <p className="text-gray-600 mb-4">{branch.address}</p>
-                <div className="flex items-center space-x-2 text-primary">
-                  <Phone className="w-4 h-4" />
+                <p className="text-gray-600 mb-4 text-sm">
+                  Roving House, 3 Mobil Road, Ile Epo Bus Stop, Satellite Town
+                </p>
+                <div className="space-y-2 mb-4">
                   <a
-                    href={`tel:${branch.phone.split("|")[0].trim()}`}
-                    className="font-semibold hover:text-secondary transition"
+                    href="tel:07086986677"
+                    className="flex items-center space-x-2 text-primary hover:text-secondary transition text-sm"
                   >
-                    {branch.phone}
+                    <Phone className="w-4 h-4" />
+                    <span className="font-semibold">070 8698 6677</span>
+                  </a>
+                  <a
+                    href="tel:08033590577"
+                    className="flex items-center space-x-2 text-primary hover:text-secondary transition text-sm"
+                  >
+                    <Phone className="w-4 h-4" />
+                    <span className="font-semibold">080 3359 0577</span>
                   </a>
                 </div>
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=Roving+House+3+Mobil+Road+Ile+Epo+Bus+Stop+Satellite+Town+Lagos"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full text-center bg-primary text-white py-2 rounded-lg hover:bg-blue-800 transition font-semibold text-sm"
+                >
+                  Get Directions
+                </a>
               </div>
-            ))}
+            </div>
+
+            {/* Abule Ado Branch */}
+            <div className="bg-white border-2 border-gray-200 rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+              {/* Mini Map */}
+              <div className="h-48 bg-gray-100 overflow-hidden">
+                <iframe
+                  src="https://maps.google.com/maps?q=Plot%20446%20Old%20Ojo%20Road,%20Christ-in-me%20Plaza,%20Abule%20Ado,%20Lagos&t=&z=14&ie=UTF8&iwloc=&output=embed"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  loading="lazy"
+                  title="Abule Ado Branch Map"
+                ></iframe>
+              </div>
+
+              <div className="p-6">
+                <div className="flex items-center space-x-2 mb-3">
+                  <Building2 className="w-5 h-5 text-primary" />
+                  <h3 className="text-xl font-bold text-gray-900">
+                    Abule Ado Branch
+                  </h3>
+                </div>
+                <p className="text-gray-600 mb-4 text-sm">
+                  Plot 446 Old Ojo Road, Christ-in-me Plaza, Beside Petrocam
+                  Filling Station
+                </p>
+                <a
+                  href="tel:08060909199"
+                  className="flex items-center space-x-2 text-primary hover:text-secondary transition text-sm mb-4"
+                >
+                  <Phone className="w-4 h-4" />
+                  <span className="font-semibold">080 6090 9199</span>
+                </a>
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=Plot+446+Old+Ojo+Road+Christ-in-me+Plaza+Abule+Ado+Lagos"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full text-center bg-primary text-white py-2 rounded-lg hover:bg-blue-800 transition font-semibold text-sm"
+                >
+                  Get Directions
+                </a>
+              </div>
+            </div>
+
+            {/* Olodi Apapa Branch */}
+            <div className="bg-white border-2 border-gray-200 rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+              {/* Mini Map */}
+              <div className="h-48 bg-gray-100 overflow-hidden">
+                <iframe
+                  src="https://maps.google.com/maps?q=Plot%20174%20Kirikiri%20Road,%20People's%20bus%20stop,%20Olodi%20Apapa,%20Lagos&t=&z=14&ie=UTF8&iwloc=&output=embed"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  loading="lazy"
+                  title="Olodi Apapa Branch Map"
+                ></iframe>
+              </div>
+
+              <div className="p-6">
+                <div className="flex items-center space-x-2 mb-3">
+                  <Building2 className="w-5 h-5 text-primary" />
+                  <h3 className="text-xl font-bold text-gray-900">
+                    Olodi Apapa Branch
+                  </h3>
+                </div>
+                <p className="text-gray-600 mb-4 text-sm">
+                  Plot 174 Kirikiri Road, People's bus stop, Olodi Apapa
+                </p>
+                <a
+                  href="tel:09139221666"
+                  className="flex items-center space-x-2 text-primary hover:text-secondary transition text-sm mb-4"
+                >
+                  <Phone className="w-4 h-4" />
+                  <span className="font-semibold">091 3922 1666</span>
+                </a>
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=Plot+174+Kirikiri+Road+Olodi+Apapa+Lagos"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full text-center bg-primary text-white py-2 rounded-lg hover:bg-blue-800 transition font-semibold text-sm"
+                >
+                  Get Directions
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -581,3 +671,4 @@ export default function Home() {
     </div>
   );
 }
+

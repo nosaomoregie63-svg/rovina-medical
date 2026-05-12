@@ -44,7 +44,7 @@ export default function Register() {
 
     try {
       const API_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+        import.meta.env.VITE_API_URL || "http://localhost:5001/api";
 
       const response = await axios.post(`${API_URL}/patients/register`, {
         firstName: formData.firstName,
@@ -62,18 +62,24 @@ export default function Register() {
           email: formData.email,
           password: formData.password,
         });
+        const storedPatient = loginResp.data.patient ||
+          loginResp.data.user || {
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            email: formData.email,
+            phone: formData.phone,
+          };
+
         localStorage.setItem("patientToken", loginResp.data.token);
-        localStorage.setItem(
-          "patientData",
-          JSON.stringify(loginResp.data.patient),
-        );
+        localStorage.setItem("patientData", JSON.stringify(storedPatient));
         navigate("/patient/dashboard");
         return;
       } catch (loginError) {
-        // if auto-login fails, fallback to showing login page link
+        // if auto-login fails, redirect to home page with success message
         console.warn("Auto login after register failed", loginError);
+        toast.info("Account created successfully! Please login to continue.");
         setTimeout(() => {
-          navigate("/login?registered=true");
+          navigate("/");
         }, 2000);
         return;
       }

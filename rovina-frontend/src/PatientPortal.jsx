@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { toast } from "react-toastify";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
 
 export default function PatientPortal() {
   const [searchParams] = useSearchParams();
@@ -36,10 +36,10 @@ export default function PatientPortal() {
       const response = await axios.get(
         `${API_URL}/appointments/patient/${email}`,
       );
-      setAppointments(response.data);
+      setAppointments(response.data.data || []);
       setSearched(true);
 
-      if (response.data.length === 0) {
+      if ((response.data.data || []).length === 0) {
         toast.info("No appointments found for this email");
       }
     } catch (error) {
@@ -290,3 +290,5 @@ export default function PatientPortal() {
     </div>
   );
 }
+
+

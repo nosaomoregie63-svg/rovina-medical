@@ -4,7 +4,7 @@ import axios from "axios";
 import { Mail, Lock, Loader, LogIn } from "lucide-react";
 import { toast } from "react-toastify";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
 
 export default function AdminLogin() {
   const navigate = useNavigate();
@@ -73,7 +73,7 @@ export default function AdminLogin() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="input-field pl-12 w-full"
-                placeholder="rovinamedicaldiagostic@gmail.com or michealomoregie1@gmail.com"
+                placeholder="admin@example.com"
                 required
               />
             </div>
@@ -95,9 +95,6 @@ export default function AdminLogin() {
                 required
               />
             </div>
-            <p className="text-xs text-gray-500 mt-1">
-              Demo: admin123 | Your password: Omoregie1
-            </p>
           </div>
 
           {/* Submit Button */}
@@ -117,29 +114,6 @@ export default function AdminLogin() {
                 Sign In
               </>
             )}
-          </button>
-          {/* Demo Login Button */}
-          <button
-            type="button"
-            onClick={() => {
-              setEmail("rovinamedicaldiagostic@gmail.com");
-              setPassword("admin123");
-            }}
-            className="btn-secondary w-full flex items-center justify-center gap-2"
-          >
-            Demo Login (Fill Credentials)
-          </button>
-
-          {/* User Login Button */}
-          <button
-            type="button"
-            onClick={() => {
-              setEmail("michealomoregie1@gmail.com");
-              setPassword("Omoregie1");
-            }}
-            className="btn-outline w-full flex items-center justify-center gap-2"
-          >
-            Your Login (Fill Credentials)
           </button>
           {/* Forgot Password Link */}
           <div className="text-center">
@@ -178,3 +152,5 @@ export default function AdminLogin() {
     </div>
   );
 }
+
+

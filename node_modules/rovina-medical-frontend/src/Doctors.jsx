@@ -40,10 +40,11 @@ export default function Doctors() {
   }, [selectedDepartment, doctors]);
 
   const fetchDoctors = async () => {
+    setLoading(true);
     try {
       // Check if we should use mock data
       if (import.meta.env.VITE_USE_MOCK === "true") {
-        console.log("Using mock doctors data");
+        console.log("✓ Using mock doctors data (VITE_USE_MOCK=true)");
         const mockDoctors = [
           {
             _id: "d1",
@@ -76,9 +77,13 @@ export default function Doctors() {
         return;
       }
 
-      const API_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-      const response = await axios.get(`${API_URL}/doctors`);
+      const apiUrl =
+        import.meta.env.VITE_API_URL || "http://localhost:5001/api";
+      console.log(`📡 Fetching doctors from: ${apiUrl}/doctors`);
+
+      const response = await axios.get(`${apiUrl}/doctors`)
+
+      console.log("✓ Doctors fetched successfully from API");
       const fetchedDoctors = response.data?.data ?? response.data ?? [];
       const normalizedDoctors = Array.isArray(fetchedDoctors)
         ? fetchedDoctors
@@ -86,7 +91,13 @@ export default function Doctors() {
       setDoctors(normalizedDoctors);
       setFilteredDoctors(normalizedDoctors);
     } catch (error) {
-      console.error("Failed to fetch doctors:", error);
+      console.error("❌ Failed to fetch doctors from API:", error.message);
+      console.warn(
+        "⚠️  Falling back to mock doctors. Check that:",
+        "\n1. Backend server is running: npm run dev:backend",
+        "\n2. VITE_USE_MOCK=false in .env.local",
+        "\n3. API is accessible at http://localhost:5001/api/doctors",
+      );
       setDoctors([]);
       setFilteredDoctors([]);
     } finally {
@@ -312,3 +323,5 @@ export default function Doctors() {
     </div>
   );
 }
+
+

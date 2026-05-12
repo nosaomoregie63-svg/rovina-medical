@@ -4,12 +4,21 @@
   "description": "Rovina Medical Diagnostic Services",
   "private": true,
   "workspaces": [
+    "rovina-backend",
     "rovina-frontend"
   ],
   "scripts": {
-    "dev": "npm run dev --workspace=rovina-frontend",
+    "dev": "concurrently \"npm run dev --workspace=rovina-backend\" \"npm run dev --workspace=rovina-frontend\"",
+    "dev:backend": "npm run dev --workspace=rovina-backend",
+    "dev:frontend": "npm run dev --workspace=rovina-frontend",
+    "start:backend": "npm start --workspace=rovina-backend",
+    "start:frontend": "npm run build --workspace=rovina-frontend && npm run preview --workspace=rovina-frontend",
     "build": "npm run build --workspace=rovina-frontend",
     "preview": "npm run preview --workspace=rovina-frontend",
-    "lint": "npm run lint --workspace=rovina-frontend"
+    "lint": "npm run lint --workspace=rovina-frontend",
+    "install:all": "npm install && npm install --workspace=rovina-backend && npm install --workspace=rovina-frontend"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
   }
 }

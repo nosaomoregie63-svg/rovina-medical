@@ -24,7 +24,7 @@ export default function Payment() {
   const fetchAppointment = async () => {
     try {
       const API_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+        import.meta.env.VITE_API_URL || "http://localhost:5001/api";
       const response = await axios.get(
         `${API_URL}/appointments/${appointmentId}`,
       );
@@ -42,7 +42,7 @@ export default function Payment() {
 
     try {
       const API_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+        import.meta.env.VITE_API_URL || "http://localhost:5001/api";
 
       const response = await axios.post(`${API_URL}/payments/initialize`, {
         appointmentId: appointment._id,
@@ -222,3 +222,5 @@ export default function Payment() {
     </div>
   );
 }
+
+

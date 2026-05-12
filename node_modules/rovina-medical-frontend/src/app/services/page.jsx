@@ -13,6 +13,7 @@ import {
   Stethoscope,
   FileText,
   GraduationCap,
+  ArrowRight,
 } from "lucide-react";
 import Link from "next/link";
 import axios from "axios";
@@ -28,7 +29,7 @@ export default function Services() {
   const fetchServices = async () => {
     try {
       const API_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+        import.meta.env.VITE_API_URL || "http://localhost:5001/api";
       const response = await axios.get(`${API_URL}/departments`);
       setServices(
         response.data.data.map((dept) => ({
@@ -94,17 +95,24 @@ export default function Services() {
               services.map((service, index) => (
                 <div
                   key={index}
-                  className="bg-white border-2 border-gray-100 hover:border-primary rounded-xl p-6 transition hover:shadow-lg group"
+                  className="group bg-gradient-to-br from-white to-gray-50 border border-gray-200 rounded-xl p-8 hover:border-primary transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
                 >
-                  <div className="text-primary group-hover:text-secondary transition mb-4">
+                  <div className="w-16 h-16 bg-primary/10 rounded-lg flex items-center justify-center mb-6 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300 group-hover:scale-110">
                     {service.icon}
                   </div>
-                  <h3 className="font-bold text-xl mb-3 text-gray-900">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">
                     {service.title}
                   </h3>
-                  <p className="text-gray-600 leading-relaxed">
+                  <p className="text-gray-600 mb-6 leading-relaxed">
                     {service.description}
                   </p>
+                  <a
+                    href="#booking-section"
+                    className="flex items-center text-primary font-semibold group-hover:text-secondary transition"
+                  >
+                    <span>Book This Service</span>
+                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition" />
+                  </a>
                 </div>
               ))
             )}
@@ -113,7 +121,7 @@ export default function Services() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-gray-50">
+      <section id="booking-section" className="py-16 bg-gray-50">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
             Ready to Book Your Appointment?
@@ -138,3 +146,5 @@ export default function Services() {
     </div>
   );
 }
+
+

@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { toast } from "react-toastify";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -59,7 +59,7 @@ export default function Dashboard() {
             headers: { Authorization: `Bearer ${token}` },
           });
 
-          const allAppointments = response.data || [];
+          const allAppointments = response.data.data || [];
           const todayString = new Date().toDateString();
           const todayAppointments = allAppointments.filter((appointment) => {
             const appointmentDate = new Date(appointment.date);
@@ -330,3 +330,5 @@ export default function Dashboard() {
     </div>
   );
 }
+
+

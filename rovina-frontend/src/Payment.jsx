@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { toast } from "react-toastify";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
 
 export default function Payment() {
   const navigate = useNavigate();
@@ -25,13 +25,55 @@ export default function Payment() {
   const [processing, setProcessing] = useState(false);
 
   useEffect(() => {
+    const splitName = (name) => {
+      if (!name) return { firstName: "", lastName: "" };
+      const parts = name.trim().split(" ").filter(Boolean);
+      return {
+        firstName: parts[0] || "",
+        lastName: parts.slice(1).join(" ") || "",
+      };
+    };
+
+    // First check if appointment details are in URL params
+    const urlDetails = {
+      _id: searchParams.get("id"),
+      firstName: searchParams.get("firstName"),
+      lastName: searchParams.get("lastName"),
+      department: searchParams.get("department"),
+      appointmentDate: searchParams.get("date"),
+      appointmentTime: searchParams.get("time"),
+      email: searchParams.get("email"),
+      phone: searchParams.get("phone"),
+      doctor: searchParams.get("doctor") || null,
+      name: searchParams.get("name"),
+    };
+
+    if (!urlDetails.firstName && urlDetails.name) {
+      const parsed = splitName(urlDetails.name);
+      urlDetails.firstName = parsed.firstName;
+      urlDetails.lastName = parsed.lastName;
+    }
+
+    if (
+      urlDetails._id &&
+      urlDetails.firstName &&
+      urlDetails.email &&
+      urlDetails.phone
+    ) {
+      // Use URL params data
+      setAppointment(urlDetails);
+      setLoading(false);
+      return;
+    }
+
+    // If no URL params, try to fetch by appointment ID
     if (appointmentId) {
       fetchAppointment();
     } else {
       toast.error("No appointment selected");
       navigate("/patient-portal");
     }
-  }, [appointmentId, navigate]);
+  }, [appointmentId, navigate, searchParams]);
 
   const fetchAppointment = async () => {
     try {
@@ -39,7 +81,7 @@ export default function Payment() {
       const response = await axios.get(
         `${API_URL}/appointments/${appointmentId}`,
       );
-      setAppointment(response.data);
+      setAppointment(response.data.data || response.data);
     } catch (error) {
       console.error("Error fetching appointment:", error);
       const errorMsg =
@@ -102,6 +144,12 @@ export default function Payment() {
     return null;
   }
 
+  const patientName =
+    appointment.firstName || appointment.lastName
+      ? `${appointment.firstName || ""} ${appointment.lastName || ""}`.trim()
+      : appointment.name ||
+        (appointment.email ? appointment.email.split("@")[0] : "");
+
   const subtotal = amount;
   const tax = amount * 0.05;
   const total = subtotal + tax;
@@ -143,7 +191,7 @@ export default function Payment() {
                   Patient Name
                 </label>
                 <p className="text-lg font-semibold text-gray-900">
-                  {appointment.firstName} {appointment.lastName}
+                  {patientName}
                 </p>
               </div>
 
@@ -172,16 +220,26 @@ export default function Payment() {
 
               {/* Appointment Date */}
               <div>
-                <label className="text-xs font-semibold text-gray-500 uppercase mb-2 block flex items-center gap-2">
+                <label className="text-xs font-semibold text-gray-500 uppercase mb-2 flex items-center gap-2">
                   <CalendarIcon className="w-4 h-4" />
                   Appointment Date
                 </label>
                 <p className="text-lg font-semibold text-gray-900">
-                  {new Date(appointment.date).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
+                  {(() => {
+                    const dateValue =
+                      appointment.appointmentDate ||
+                      appointment.preferredDate ||
+                      appointment.date;
+                    // Handle simple date string format (YYYY-MM-DD)
+                    const date = dateValue.includes("T")
+                      ? new Date(dateValue)
+                      : new Date(dateValue + "T00:00:00");
+                    return date.toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    });
+                  })()}
                 </p>
               </div>
 
@@ -209,7 +267,7 @@ export default function Payment() {
 
               {appointment.message && (
                 <div className="pt-4 border-t">
-                  <label className="text-xs font-semibold text-gray-500 uppercase mb-2 block flex items-center gap-2">
+                  <label className="text-xs font-semibold text-gray-500 uppercase mb-2 flex items-center gap-2">
                     <FileText className="w-4 h-4" />
                     Notes
                   </label>
@@ -230,7 +288,7 @@ export default function Payment() {
                   Amount (₦) *
                 </label>
                 <div className="relative">
-                  <span className="absolute left-4 top-3.5 text-xl font-semibold text-gray-600">
+                  <span className="absolute left-1 top-3.5 text-xl font-semibold text-gray-600">
                     ₦
                   </span>
                   <input
@@ -239,7 +297,7 @@ export default function Payment() {
                     onChange={(e) =>
                       setAmount(Math.max(0, parseInt(e.target.value) || 0))
                     }
-                    className="input-field pl-10 w-full"
+                    className="input-field pl-16 w-full"
                     min="1"
                     required
                   />

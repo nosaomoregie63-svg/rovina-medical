@@ -45,15 +45,29 @@ export default function UsersManagement() {
   const [selectedPatient, setSelectedPatient] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const userData = localStorage.getItem("user");
+    const token = localStorage.getItem("adminToken");
+    const userData = localStorage.getItem("adminUser");
 
-    if (!token || !userData) {
+    if (
+      !token ||
+      !userData ||
+      userData === "undefined" ||
+      userData === "null"
+    ) {
       router.push("/admin/login");
       return;
     }
 
-    setUser(JSON.parse(userData));
+    try {
+      setUser(JSON.parse(userData));
+    } catch (error) {
+      console.error("Error parsing admin user data:", error);
+      localStorage.removeItem("adminToken");
+      localStorage.removeItem("adminUser");
+      router.push("/admin/login");
+      return;
+    }
+
     fetchPatients();
     fetchStats();
   }, []);
@@ -65,8 +79,8 @@ export default function UsersManagement() {
   const fetchPatients = async () => {
     try {
       const API_URL =
-        process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
-      const token = localStorage.getItem("token");
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001/api";
+      const token = localStorage.getItem("adminToken");
 
       const response = await axios.get(`${API_URL}/admin/patients`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -83,8 +97,8 @@ export default function UsersManagement() {
   const fetchStats = async () => {
     try {
       const API_URL =
-        process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
-      const token = localStorage.getItem("token");
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001/api";
+      const token = localStorage.getItem("adminToken");
 
       const response = await axios.get(`${API_URL}/admin/patients/stats`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -131,8 +145,8 @@ export default function UsersManagement() {
   const handleToggleStatus = async (patientId) => {
     try {
       const API_URL =
-        process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
-      const token = localStorage.getItem("token");
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001/api";
+      const token = localStorage.getItem("adminToken");
 
       await axios.patch(
         `${API_URL}/admin/patients/${patientId}/toggle-status`,
@@ -160,8 +174,8 @@ export default function UsersManagement() {
 
     try {
       const API_URL =
-        process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
-      const token = localStorage.getItem("token");
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001/api";
+      const token = localStorage.getItem("adminToken");
 
       await axios.delete(`${API_URL}/admin/patients/${patientId}`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -667,3 +681,5 @@ export default function UsersManagement() {
     </div>
   );
 }
+
+

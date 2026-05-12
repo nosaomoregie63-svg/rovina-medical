@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { toast } from "react-toastify";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
 
 export default function AdminReports() {
   const navigate = useNavigate();
@@ -41,14 +41,14 @@ export default function AdminReports() {
         `${API_URL}/appointments/reports/departments`,
         { headers: { Authorization: `Bearer ${token}` } },
       );
-      setDepartmentStats(deptResponse.data);
+      setDepartmentStats(deptResponse.data?.data || deptResponse.data || []);
 
       // Fetch doctor workload statistics
       const doctorResponse = await axios.get(
         `${API_URL}/appointments/reports/doctors`,
         { headers: { Authorization: `Bearer ${token}` } },
       );
-      setDoctorStats(doctorResponse.data);
+      setDoctorStats(doctorResponse.data?.data || doctorResponse.data || []);
     } catch (error) {
       console.error("Error fetching reports:", error);
       if (error.response?.status === 401) {

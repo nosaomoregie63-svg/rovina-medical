@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
 
 // In-memory mock data
 const doctors = [
@@ -211,6 +211,8 @@ axios.post = async function (url, data, config) {
 
     if (pathname === "/api/appointments") {
       const id = String(Date.now() + Math.floor(Math.random() * 1000));
+      const appointmentDate =
+        data.preferredDate || data.date || new Date().toISOString();
       const newAppt = {
         _id: id,
         firstName: data.firstName || data.first_name || "",
@@ -219,7 +221,8 @@ axios.post = async function (url, data, config) {
         phone: data.phone || "",
         department: data.department || "",
         doctor: data.doctor || null,
-        date: data.date || new Date().toISOString(),
+        preferredDate: appointmentDate,
+        date: appointmentDate,
         message: data.message || "",
         status: "pending",
         createdAt: new Date().toISOString(),
@@ -347,6 +350,28 @@ axios.post = async function (url, data, config) {
       );
     }
 
+    if (pathname === "/api/patients/resend-verification") {
+      const email = data?.email || "";
+      const normalizedEmail = email.trim().toLowerCase();
+      const patientExists = patients.some(
+        (p) => p.email.toLowerCase() === normalizedEmail,
+      );
+
+      if (patientExists) {
+        console.log(`Mock resend verification requested for ${email}`);
+      }
+
+      return Promise.resolve(
+        makeAxiosResponse(
+          {
+            message:
+              "If this email is registered, a verification message has been sent.",
+          },
+          200,
+        ),
+      );
+    }
+
     return Promise.reject({
       response: { status: 404, data: { message: "Mock POST: Not found" } },
     });
@@ -383,6 +408,18 @@ axios.put = async function (url, data, config) {
         });
       appointments[idx] = { ...appointments[idx], ...data };
       return Promise.resolve(makeAxiosResponse(appointments[idx], 200));
+    }
+
+    // PUT /api/patients/profile
+    if (pathname === "/api/patients/profile") {
+      const email = (data?.email || "").toLowerCase();
+      const idx = patients.findIndex((p) => p.email.toLowerCase() === email);
+      if (idx === -1)
+        return Promise.reject({
+          response: { status: 404, data: { message: "Patient not found" } },
+        });
+      patients[idx] = { ...patients[idx], ...data };
+      return Promise.resolve(makeAxiosResponse({ data: patients[idx] }, 200));
     }
 
     // PUT /api/doctors/:id

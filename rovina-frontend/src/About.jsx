@@ -1,4 +1,4 @@
-﻿import {
+import {
   Award,
   Target,
   Eye,
@@ -455,4 +455,5 @@ export default function About() {
     </div>
   );
 }
+
 

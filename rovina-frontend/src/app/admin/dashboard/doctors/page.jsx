@@ -73,23 +73,37 @@ export default function DoctorsManagement() {
   ];
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const userData = localStorage.getItem("user");
+    const token = localStorage.getItem("adminToken");
+    const userData = localStorage.getItem("adminUser");
 
-    if (!token || !userData) {
+    if (
+      !token ||
+      !userData ||
+      userData === "undefined" ||
+      userData === "null"
+    ) {
       router.push("/admin/login");
       return;
     }
 
-    setUser(JSON.parse(userData));
+    try {
+      setUser(JSON.parse(userData));
+    } catch (error) {
+      console.error("Error parsing admin user data:", error);
+      localStorage.removeItem("adminToken");
+      localStorage.removeItem("adminUser");
+      router.push("/admin/login");
+      return;
+    }
+
     fetchDoctors();
   }, []);
 
   const fetchDoctors = async () => {
     try {
       const API_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-      const token = localStorage.getItem("token");
+        import.meta.env.VITE_API_URL || "http://localhost:5001/api";
+      const token = localStorage.getItem("adminToken");
 
       const response = await axios.get(`${API_URL}/doctors`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -147,8 +161,8 @@ export default function DoctorsManagement() {
 
     try {
       const API_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-      const token = localStorage.getItem("token");
+        import.meta.env.VITE_API_URL || "http://localhost:5001/api";
+      const token = localStorage.getItem("adminToken");
 
       const submitData = new FormData();
 
@@ -217,8 +231,8 @@ export default function DoctorsManagement() {
 
     try {
       const API_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-      const token = localStorage.getItem("token");
+        import.meta.env.VITE_API_URL || "http://localhost:5001/api";
+      const token = localStorage.getItem("adminToken");
 
       await axios.delete(`${API_URL}/doctors/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -746,3 +760,5 @@ export default function DoctorsManagement() {
     </div>
   );
 }
+
+

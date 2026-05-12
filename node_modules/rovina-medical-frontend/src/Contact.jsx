@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Phone, Mail, MapPin, Clock, Send } from "lucide-react";
 import { toast } from "react-toastify";
-import MapComponent from "./components/MapComponent";
 import RovinaBranding from "./components/RovinaBranding";
 
 export default function Contact() {
@@ -280,9 +279,9 @@ export default function Contact() {
           <h2 className="text-3xl font-bold text-center mb-8">
             Find Us on the Map
           </h2>
-          <MapComponent />
         </div>
       </section>
     </div>
   );
 }
+

@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { toast } from "react-toastify";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
 
 const DEPARTMENTS = [
   "General",
@@ -82,7 +82,7 @@ export default function AdminDoctors() {
       const response = await axios.get(`${API_URL}/doctors`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setDoctors(response.data);
+      setDoctors(response.data.data || response.data || []);
     } catch (error) {
       console.error("Error fetching doctors:", error);
       if (error.response?.status === 401) {

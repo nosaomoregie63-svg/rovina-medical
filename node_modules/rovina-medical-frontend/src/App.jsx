@@ -3,6 +3,7 @@ import {
   Routes,
   Route,
   useLocation,
+  Link,
 } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -18,6 +19,7 @@ import Contact from "./Contact";
 import Doctors from "./Doctors";
 import BookAppointment from "./BookAppointment";
 import PatientPortal from "./PatientPortal";
+import TrackAppointments from "./TrackAppointments";
 import Payment from "./Payment";
 import PaymentCallback from "./PaymentCallback";
 import Privacy from "./Privacy";
@@ -68,6 +70,7 @@ function AppRoutes() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/doctors" element={<Doctors />} />
           <Route path="/book-appointment" element={<BookAppointment />} />
+          <Route path="/track-appointments" element={<TrackAppointments />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/patient-portal" element={<PatientPortal />} />
@@ -104,10 +107,28 @@ function AppRoutes() {
             element={<AdminDepartments />}
           />
           <Route path="/admin/dashboard/reports" element={<AdminReports />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
       {!isInPortal && <Footer />}
       <ToastContainer position="bottom-right" autoClose={3000} />
+    </div>
+  );
+}
+
+function NotFound() {
+  return (
+    <div className="container mx-auto px-4 py-20 text-center">
+      <h1 className="text-6xl font-bold mb-6">404</h1>
+      <p className="text-xl text-gray-600 mb-6">
+        Sorry, we couldn’t find that page.
+      </p>
+      <Link
+        to="/"
+        className="inline-block rounded-full bg-primary px-6 py-3 text-white font-semibold hover:bg-primaryDark transition"
+      >
+        Back to Home
+      </Link>
     </div>
   );
 }

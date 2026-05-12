@@ -1,5 +1,5 @@
-"use client";
 import { useEffect, useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import {
   Calendar,
   Clock,
@@ -20,7 +20,6 @@ import {
 } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { Link } from "react-router-dom";
 import {
   format,
   isToday,
@@ -30,6 +29,7 @@ import {
 } from "date-fns";
 
 export default function PatientDashboard() {
+  const navigate = useNavigate();
   const [patient, setPatient] = useState(null);
   const [appointments, setAppointments] = useState([]);
   const [stats, setStats] = useState({
@@ -43,12 +43,21 @@ export default function PatientDashboard() {
 
   useEffect(() => {
     const patientData = localStorage.getItem("patientData");
-    if (patientData) {
-      setPatient(JSON.parse(patientData));
+    if (patientData && patientData !== "undefined" && patientData !== "null") {
+      try {
+        setPatient(JSON.parse(patientData));
+      } catch (error) {
+        console.error("Error parsing patient data:", error);
+        // Clear corrupted data
+        localStorage.removeItem("patientToken");
+        localStorage.removeItem("patientData");
+        navigate("/login");
+        return;
+      }
     }
     fetchDashboardData();
     setGreetingMessage();
-  }, []);
+  }, [navigate]);
 
   const setGreetingMessage = () => {
     const hour = new Date().getHours();
@@ -57,15 +66,62 @@ export default function PatientDashboard() {
     else setGreeting("Good Evening");
   };
 
+  const getDisplayName = (patient) => {
+    if (!patient) return "";
+
+    const firstName = patient.firstName?.trim();
+    const lastName = patient.lastName?.trim();
+    if (firstName || lastName) {
+      return `${firstName || ""} ${lastName || ""}`.trim();
+    }
+
+    const username =
+      patient.username?.trim() ||
+      patient.userName?.trim() ||
+      patient.name?.trim();
+    const isEmail = (value) =>
+      /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value);
+
+    if (username && !isEmail(username)) {
+      return username;
+    }
+
+    if (patient.email) {
+      const local = patient.email
+        .split("@")[0]
+        .replace(/[^a-zA-Z0-9]+/g, " ")
+        .trim();
+      return local
+        .split(" ")
+        .filter(Boolean)
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+    }
+
+    return "Patient";
+  };
+
   const fetchDashboardData = async () => {
     try {
       const API_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+        import.meta.env.VITE_API_URL || "http://localhost:5001/api";
       const token = localStorage.getItem("patientToken");
 
       // fetch appointments using patient email since mock lacks my-appointments
       const stored = localStorage.getItem("patientData");
-      const email = stored ? JSON.parse(stored).email : "";
+      let email = "";
+      if (stored && stored !== "undefined" && stored !== "null") {
+        try {
+          email = JSON.parse(stored).email || "";
+        } catch (error) {
+          console.error("Error parsing patient data:", error);
+          // Clear corrupted data
+          localStorage.removeItem("patientToken");
+          localStorage.removeItem("patientData");
+          navigate("/login");
+          return;
+        }
+      }
       const response = await axios.get(
         `${API_URL}/appointments/patient/${encodeURIComponent(email)}`,
       );
@@ -198,7 +254,7 @@ export default function PatientDashboard() {
           <div>
             <p className="text-blue-100 text-lg mb-2">{greeting},</p>
             <h1 className="text-4xl font-bold mb-2">
-              {patient?.firstName} {patient?.lastName}
+              {getDisplayName(patient)}
             </h1>
             <p className="text-blue-100">Welcome to your health dashboard</p>
           </div>

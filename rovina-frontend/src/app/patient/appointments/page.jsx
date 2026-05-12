@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { format } from "date-fns";
@@ -22,6 +23,7 @@ const getPaymentBadge = (paymentStatus) => {
 };
 
 export default function PatientAppointments() {
+  const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -33,12 +35,27 @@ export default function PatientAppointments() {
     try {
       setLoading(true);
       const API_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+        import.meta.env.VITE_API_URL || "http://localhost:5001/api";
       // include email in path rather than relying on token
       const stored = localStorage.getItem("patientData");
-      const email = stored ? JSON.parse(stored).email : "";
+      if (!stored || stored === "undefined" || stored === "null") {
+        navigate("/login");
+        return;
+      }
+
+      let patientEmail;
+      try {
+        patientEmail = JSON.parse(stored).email;
+      } catch (error) {
+        console.error("Error parsing patient data:", error);
+        localStorage.removeItem("patientToken");
+        localStorage.removeItem("patientData");
+        navigate("/login");
+        return;
+      }
+
       const res = await axios.get(
-        `${API_URL}/appointments/patient/${encodeURIComponent(email)}`,
+        `${API_URL}/appointments/patient/${encodeURIComponent(patientEmail)}`,
       );
       setAppointments(res.data.data || []);
     } catch (err) {
@@ -52,7 +69,7 @@ export default function PatientAppointments() {
     if (!confirm("Cancel this appointment?")) return;
     try {
       const API_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+        import.meta.env.VITE_API_URL || "http://localhost:5001/api";
       const token = localStorage.getItem("patientToken");
       await axios.put(
         `${API_URL}/appointments/cancel/${id}`,
@@ -64,6 +81,13 @@ export default function PatientAppointments() {
     } catch (err) {
       toast.error("Failed to cancel");
     }
+  };
+
+  const formatAppointmentDate = (value) => {
+    const date = new Date(value);
+    return Number.isNaN(date.getTime())
+      ? "Date unavailable"
+      : format(date, "PPP");
   };
 
   return (
@@ -101,7 +125,7 @@ export default function PatientAppointments() {
                     : ""}
                 </h3>
                 <p className="text-sm text-gray-600">
-                  {format(new Date(a.preferredDate), "PPP")}
+                  {formatAppointmentDate(a.preferredDate || a.date)}
                 </p>
                 <p className="text-sm text-gray-500 mt-1">
                   Status: <span className="font-medium">{a.status}</span>

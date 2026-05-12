@@ -14,13 +14,26 @@ export default function Login() {
   const [formData, setFormData] = useState({ email: "", password: "" });
 
   useEffect(() => {
+    // Redirect if already logged in
+    const token = localStorage.getItem("patientToken");
+    const patientData = localStorage.getItem("patientData");
+    if (
+      token &&
+      patientData &&
+      patientData !== "undefined" &&
+      patientData !== "null"
+    ) {
+      navigate("/patient/dashboard");
+      return;
+    }
+
     const params = new URLSearchParams(location.search);
     if (params.get("registered") === "true") {
       toast.info(
         "Please check your email to verify your account before logging in.",
       );
     }
-  }, [location.search]);
+  }, [location.search, navigate]);
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -31,14 +44,12 @@ export default function Login() {
 
     try {
       const API_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+        import.meta.env.VITE_API_URL || "http://localhost:5001/api";
       const response = await axios.post(`${API_URL}/patients/login`, formData);
+      const patient = response.data.patient || response.data.user;
 
       localStorage.setItem("patientToken", response.data.token);
-      localStorage.setItem(
-        "patientData",
-        JSON.stringify(response.data.patient),
-      );
+      localStorage.setItem("patientData", JSON.stringify(patient));
 
       toast.success("Login successful!");
       navigate("/patient/dashboard");
@@ -179,3 +190,5 @@ export default function Login() {
     </div>
   );
 }
+
+

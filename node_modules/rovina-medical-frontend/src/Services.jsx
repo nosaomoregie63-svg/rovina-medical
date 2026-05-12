@@ -15,6 +15,7 @@ import {
   CheckCircle,
   ArrowRight,
   Phone,
+  MapPin,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import axios from "axios";
@@ -29,10 +30,11 @@ export default function Services() {
   }, []);
 
   const fetchServices = async () => {
+    setLoading(true);
     try {
       // Check if we should use mock data
       if (import.meta.env.VITE_USE_MOCK === "true") {
-        console.log("Using mock services data");
+        console.log("✓ Using mock services data (VITE_USE_MOCK=true)");
         setServices([
           {
             icon: <Scan className="w-10 h-10" />,
@@ -112,12 +114,17 @@ export default function Services() {
             description: "Medical research and professional training programs",
           },
         ]);
+        setLoading(false);
         return;
       }
 
-      const API_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-      const response = await axios.get(`${API_URL}/departments`);
+      const apiUrl =
+        import.meta.env.VITE_API_URL || "http://localhost:5001/api";
+      console.log(`📡 Fetching services from: ${apiUrl}/departments`);
+
+      const response = await axios.get(`${apiUrl}/departments`);
+
+      console.log("✓ Services fetched successfully from API");
       setServices(
         response.data.data.map((dept) => ({
           icon: getIconForDepartment(dept.name),
@@ -126,7 +133,14 @@ export default function Services() {
         })),
       );
     } catch (error) {
-      console.error("Failed to fetch services:", error);
+      console.error("❌ Failed to fetch services from API:", error.message);
+      console.warn(
+        "⚠️  Falling back to hardcoded services. Check that:",
+        "\n1. Backend server is running: npm run dev:backend",
+        "\n2. VITE_USE_MOCK=false in .env.local",
+        "\n3. API is accessible at http://localhost:5001/api/departments",
+      );
+
       // Fallback to hardcoded services
       setServices([
         {
@@ -359,10 +373,13 @@ export default function Services() {
                     <p className="text-gray-600 mb-6 leading-relaxed">
                       {service.description}
                     </p>
-                    <div className="flex items-center text-primary font-semibold group-hover:text-secondary transition">
+                    <a
+                      href="#booking-section"
+                      className="flex items-center text-primary font-semibold group-hover:text-secondary transition"
+                    >
                       <span>Learn More</span>
                       <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition" />
-                    </div>
+                    </a>
                   </div>
                 ))}
               </div>
@@ -428,6 +445,219 @@ export default function Services() {
         </div>
       </section>
 
+      {/* Our Locations - Find Our Services */}
+      <section className="py-20 bg-gray-50 relative">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <p className="text-secondary font-bold text-sm uppercase tracking-wider mb-3">
+                VISIT US
+              </p>
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                Find Our Services Near You
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                Visit any of our convenient locations for comprehensive
+                diagnostic services
+              </p>
+            </div>
+
+            <div className="space-y-8">
+              {/* Head Office Map - Satellite Town */}
+              <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
+                <div className="bg-gradient-to-r from-primary to-blue-800 text-white p-4">
+                  <h3 className="text-xl font-bold flex items-center">
+                    <MapPin className="w-6 h-6 mr-2" />
+                    Head Office - Satellite Town
+                  </h3>
+                </div>
+                <div className="grid grid-cols-1 lg:grid-cols-2">
+                  <div className="h-80 lg:h-96">
+                    <iframe
+                      width="100%"
+                      height="100%"
+                      frameBorder="0"
+                      scrolling="no"
+                      marginHeight="0"
+                      marginWidth="0"
+                      src="https://maps.google.com/maps?q=3+Mobil+Road+Ile+Epo+Bus+Stop+Satellite+Town+Lagos&output=embed"
+                    ></iframe>
+                  </div>
+                  <div className="p-6">
+                    <div className="space-y-4">
+                      <div>
+                        <p className="text-sm text-gray-500 mb-1">ADDRESS</p>
+                        <p className="text-gray-900 font-semibold">
+                          Roving House, 3 Mobil Road, Ile Epo Bus Stop,
+                          Satellite Town, Lagos
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500 mb-1">PHONE</p>
+                        <div className="space-y-1">
+                          <a
+                            href="tel:07086986677"
+                            className="block text-primary hover:text-secondary transition font-semibold"
+                          >
+                            070 8698 6677
+                          </a>
+                          <a
+                            href="tel:09139221666"
+                            className="block text-primary hover:text-secondary transition font-semibold"
+                          >
+                            091 3922 1666
+                          </a>
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500 mb-1">SERVICES</p>
+                        <p className="text-gray-700">
+                          All diagnostic services available including
+                          Ultrasound, ECG, Laboratory, Mammography, and more
+                        </p>
+                      </div>
+                      <div className="pt-4">
+                        <a
+                          href="https://www.google.com/maps/dir/?api=1&destination=3+Mobil+Road+Ile+Epo+Bus+Stop+Satellite+Town+Lagos"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center bg-primary text-white px-6 py-3 rounded-lg hover:bg-blue-800 transition-all duration-300 font-semibold hover:scale-105 shadow-lg"
+                        >
+                          <MapPin className="w-4 h-4 mr-2" />
+                          Get Directions
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Abule Ado Branch Map */}
+              <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
+                <div className="bg-gradient-to-r from-primary to-blue-800 text-white p-4">
+                  <h3 className="text-xl font-bold flex items-center">
+                    <MapPin className="w-6 h-6 mr-2" />
+                    Abule Ado Branch
+                  </h3>
+                </div>
+                <div className="grid grid-cols-1 lg:grid-cols-2">
+                  <div className="h-80 lg:h-96">
+                    <iframe
+                      width="100%"
+                      height="100%"
+                      frameBorder="0"
+                      scrolling="no"
+                      marginHeight="0"
+                      marginWidth="0"
+                      src="https://maps.google.com/maps?q=Plot+446+Old+Ojo+Road+Abule+Ado+Lagos&output=embed"
+                    ></iframe>
+                  </div>
+                  <div className="p-6">
+                    <div className="space-y-4">
+                      <div>
+                        <p className="text-sm text-gray-500 mb-1">ADDRESS</p>
+                        <p className="text-gray-900 font-semibold">
+                          Plot 446 Old Ojo Road, Abule Ado, Lagos
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500 mb-1">PHONE</p>
+                        <a
+                          href="tel:09139221666"
+                          className="block text-primary hover:text-secondary transition font-semibold"
+                        >
+                          091 3922 1666
+                        </a>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500 mb-1">SERVICES</p>
+                        <p className="text-gray-700">
+                          Full range of diagnostic services including
+                          Ultrasound, Laboratory tests, and Health screenings
+                        </p>
+                      </div>
+                      <div className="pt-4">
+                        <a
+                          href="https://www.google.com/maps/dir/?api=1&destination=Plot+446+Old+Ojo+Road+Abule+Ado+Lagos"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center bg-primary text-white px-6 py-3 rounded-lg hover:bg-blue-800 transition-all duration-300 font-semibold hover:scale-105 shadow-lg"
+                        >
+                          <MapPin className="w-4 h-4 mr-2" />
+                          Get Directions
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Olodi Apapa Branch Map */}
+              <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
+                <div className="bg-gradient-to-r from-primary to-blue-800 text-white p-4">
+                  <h3 className="text-xl font-bold flex items-center">
+                    <MapPin className="w-6 h-6 mr-2" />
+                    Olodi Apapa Branch
+                  </h3>
+                </div>
+                <div className="grid grid-cols-1 lg:grid-cols-2">
+                  <div className="h-80 lg:h-96">
+                    <iframe
+                      width="100%"
+                      height="100%"
+                      frameBorder="0"
+                      scrolling="no"
+                      marginHeight="0"
+                      marginWidth="0"
+                      src="https://maps.google.com/maps?q=Plot+174+Kirikiri+Road+Olodi+Apapa+Lagos&output=embed"
+                    ></iframe>
+                  </div>
+                  <div className="p-6">
+                    <div className="space-y-4">
+                      <div>
+                        <p className="text-sm text-gray-500 mb-1">ADDRESS</p>
+                        <p className="text-gray-900 font-semibold">
+                          Plot 174 Kirikiri Road, People's bus stop, Olodi
+                          Apapa, Lagos
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500 mb-1">PHONE</p>
+                        <a
+                          href="tel:09139221666"
+                          className="block text-primary hover:text-secondary transition font-semibold"
+                        >
+                          091 3922 1666
+                        </a>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500 mb-1">SERVICES</p>
+                        <p className="text-gray-700">
+                          Comprehensive diagnostic services including
+                          Ultrasound, ECG, Laboratory, and specialized
+                          screenings
+                        </p>
+                      </div>
+                      <div className="pt-4">
+                        <a
+                          href="https://www.google.com/maps/dir/?api=1&destination=Plot+174+Kirikiri+Road+Olodi+Apapa+Lagos"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center bg-primary text-white px-6 py-3 rounded-lg hover:bg-blue-800 transition-all duration-300 font-semibold hover:scale-105 shadow-lg"
+                        >
+                          <MapPin className="w-4 h-4 mr-2" />
+                          Get Directions
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Emergency Services Banner */}
       <section className="py-16 bg-primary text-white relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
@@ -463,7 +693,7 @@ export default function Services() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-white relative">
+      <section id="booking-section" className="py-20 bg-white relative">
         <div className="container mx-auto px-4">
           <div className="text-center">
             <h2 className="text-4xl font-bold text-gray-900 mb-6">
@@ -493,3 +723,5 @@ export default function Services() {
     </div>
   );
 }
+
+

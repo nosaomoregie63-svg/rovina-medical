@@ -19,16 +19,64 @@ export default function PatientLayout() {
   const [patient, setPatient] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  const getDisplayName = (patient) => {
+    if (!patient) return "";
+
+    const firstName = patient.firstName?.trim();
+    const lastName = patient.lastName?.trim();
+    if (firstName || lastName) {
+      return `${firstName || ""} ${lastName || ""}`.trim();
+    }
+
+    const username =
+      patient.username?.trim() ||
+      patient.userName?.trim() ||
+      patient.name?.trim();
+    const isEmail = (value) =>
+      /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value);
+
+    if (username && !isEmail(username)) {
+      return username;
+    }
+
+    if (patient.email) {
+      const local = patient.email
+        .split("@")[0]
+        .replace(/[^a-zA-Z0-9]+/g, " ")
+        .trim();
+      return local
+        .split(" ")
+        .filter(Boolean)
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+    }
+
+    return "Patient";
+  };
+
   useEffect(() => {
     const token = localStorage.getItem("patientToken");
     const patientData = localStorage.getItem("patientData");
 
-    if (!token || !patientData) {
+    if (
+      !token ||
+      !patientData ||
+      patientData === "undefined" ||
+      patientData === "null"
+    ) {
       navigate("/login");
       return;
     }
 
-    setPatient(JSON.parse(patientData));
+    try {
+      setPatient(JSON.parse(patientData));
+    } catch (error) {
+      console.error("Error parsing patient data:", error);
+      // Clear corrupted data and redirect to login
+      localStorage.removeItem("patientToken");
+      localStorage.removeItem("patientData");
+      navigate("/login");
+    }
   }, [navigate]);
 
   const handleLogout = () => {
@@ -39,6 +87,14 @@ export default function PatientLayout() {
   };
 
   const isActive = (path) => location.pathname === path;
+  const displayName = getDisplayName(patient);
+  const initials = displayName
+    .split(" ")
+    .filter(Boolean)
+    .map((word) => word.charAt(0))
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
   if (!patient) return null;
 
@@ -78,9 +134,7 @@ export default function PatientLayout() {
               </button>
               <div className="hidden md:block">
                 <p className="text-sm text-gray-600">Welcome back,</p>
-                <p className="font-semibold text-gray-900">
-                  {patient.firstName} {patient.lastName}
-                </p>
+                <p className="font-semibold text-gray-900">{displayName}</p>
               </div>
             </div>
           </div>
@@ -95,12 +149,11 @@ export default function PatientLayout() {
             <div className="mb-8 pb-6 border-b">
               <div className="w-20 h-20 bg-gradient-to-br from-primary to-primaryLight rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-white font-bold text-3xl">
-                  {patient.firstName.charAt(0)}
-                  {patient.lastName.charAt(0)}
+                  {initials || "P"}
                 </span>
               </div>
               <h2 className="text-center font-bold text-gray-900">
-                {patient.firstName} {patient.lastName}
+                {displayName}
               </h2>
               <p className="text-center text-sm text-gray-600">
                 {patient.email}

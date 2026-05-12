@@ -1,18 +1,33 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 
 export default function PatientProfile() {
-  const [profile, setProfile] = useState({});
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [profile, setProfile] = useState(null);
 
   useEffect(() => {
     const p = localStorage.getItem("patientData");
-    if (p) setProfile(JSON.parse(p));
+    if (!p || p === "undefined" || p === "null") {
+      navigate("/login");
+      return;
+    }
+
+    try {
+      setProfile(JSON.parse(p));
+    } catch (error) {
+      console.error("Error parsing patient data:", error);
+      localStorage.removeItem("patientToken");
+      localStorage.removeItem("patientData");
+      navigate("/login");
+      return;
+    }
     setLoading(false);
-  }, []);
+  }, [navigate]);
 
   const handleChange = (e) =>
     setProfile((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -22,21 +37,28 @@ export default function PatientProfile() {
     try {
       setSaving(true);
       const API_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+        import.meta.env.VITE_API_URL || "http://localhost:5001/api";
       const token = localStorage.getItem("patientToken");
       const res = await axios.put(`${API_URL}/patients/profile`, profile, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      localStorage.setItem("patientData", JSON.stringify(res.data.data));
+      const updated = res.data?.data || profile;
+      localStorage.setItem("patientData", JSON.stringify(updated));
       toast.success("Profile updated");
     } catch (err) {
-      toast.error("Failed to update profile");
+      if (err.response?.status === 404) {
+        localStorage.setItem("patientData", JSON.stringify(profile));
+        toast.success("Profile saved locally");
+      } else {
+        toast.error("Failed to update profile");
+      }
     } finally {
       setSaving(false);
     }
   };
 
-  if (loading) return <div className="py-12 text-center">Loading...</div>;
+  if (loading || !profile)
+    return <div className="py-12 text-center">Loading...</div>;
 
   return (
     <div>

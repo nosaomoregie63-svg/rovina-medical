@@ -12,8 +12,31 @@ export default function PatientSettings() {
     try {
       setLoading(true);
       const API_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-      const patient = JSON.parse(localStorage.getItem("patientData") || "{}");
+        import.meta.env.VITE_API_URL || "http://localhost:5001/api";
+      const patientData = localStorage.getItem("patientData");
+
+      if (
+        !patientData ||
+        patientData === "undefined" ||
+        patientData === "null"
+      ) {
+        toast.error("Patient data not found. Please log in again.");
+        navigate("/login");
+        return;
+      }
+
+      let patient;
+      try {
+        patient = JSON.parse(patientData);
+      } catch (error) {
+        console.error("Error parsing patient data:", error);
+        localStorage.removeItem("patientToken");
+        localStorage.removeItem("patientData");
+        toast.error("Session data corrupted. Please log in again.");
+        navigate("/login");
+        return;
+      }
+
       await axios.post(`${API_URL}/patients/resend-verification`, {
         email: patient.email,
       });
@@ -67,3 +90,5 @@ export default function PatientSettings() {
     </div>
   );
 }
+
+

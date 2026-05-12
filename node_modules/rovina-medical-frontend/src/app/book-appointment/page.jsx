@@ -4,10 +4,11 @@ import { Calendar, User, Phone, Mail, MessageSquare } from "lucide-react";
 import DatePicker from "react-datepicker";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 
 export default function BookAppointment() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const doctorId = searchParams.get("doctor");
 
   const [formData, setFormData] = useState({
@@ -32,25 +33,37 @@ export default function BookAppointment() {
 
   useEffect(() => {
     const patientToken = localStorage.getItem("patientToken");
-    const patientData = localStorage.getItem("patient");
+    const patientData = localStorage.getItem("patientData");
 
-    if (patientToken && patientData) {
-      const patient = JSON.parse(patientData);
-      setFormData((prev) => ({
-        ...prev,
-        firstName: patient.firstName || "",
-        lastName: patient.lastName || "",
-        email: patient.email || "",
-        phone: patient.phone || "",
-        isLoggedIn: true,
-      }));
+    if (
+      patientToken &&
+      patientData &&
+      patientData !== "undefined" &&
+      patientData !== "null"
+    ) {
+      try {
+        const patient = JSON.parse(patientData);
+        setFormData((prev) => ({
+          ...prev,
+          firstName: patient.firstName || "",
+          lastName: patient.lastName || "",
+          email: patient.email || "",
+          phone: patient.phone || "",
+          isLoggedIn: true,
+        }));
+      } catch (error) {
+        console.error("Error parsing patient data:", error);
+        // Clear corrupted data
+        localStorage.removeItem("patientToken");
+        localStorage.removeItem("patientData");
+      }
     }
   }, []);
 
   const fetchDepartments = async () => {
     try {
       const API_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+        import.meta.env.VITE_API_URL || "http://localhost:5001/api";
       const response = await axios.get(`${API_URL}/departments`);
       setDepartments(response.data.data.map((dept) => dept.name));
     } catch (error) {
@@ -87,7 +100,7 @@ export default function BookAppointment() {
   const fetchDoctorsByDepartment = async (department) => {
     try {
       const API_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+        import.meta.env.VITE_API_URL || "http://localhost:5001/api";
       const response = await axios.get(
         `${API_URL}/doctors?department=${department}`,
       );
@@ -118,27 +131,33 @@ export default function BookAppointment() {
 
     try {
       const API_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+        import.meta.env.VITE_API_URL || "http://localhost:5001/api";
+      const response = await axios.post(`${API_URL}/appointments`, formData);
 
-      await axios.post(`${API_URL}/appointments`, formData);
+      if (response.data.success) {
+        // Redirect to confirmation page with appointment details
+        const appointmentId =
+          response.data.appointmentId || `APT-${Date.now()}`;
+        const params = new URLSearchParams({
+          id: appointmentId,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          department: formData.department,
+          date: formData.preferredDate.toISOString().split("T")[0],
+          time: "09:00",
+          name: `${formData.firstName} ${formData.lastName}`,
+          email: formData.email,
+          phone: formData.phone,
+        });
 
-      toast.success(
-        "Appointment request submitted successfully! We will contact you within 24 hours.",
-      );
-
-      setFormData({
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        department: "",
-        doctor: "",
-        preferredDate: new Date(),
-        message: "",
-      });
-      setDoctors([]);
+        router.push(`/appointment-confirmed?${params.toString()}`);
+      }
     } catch (error) {
-      toast.error("Failed to submit appointment. Please try again or call us.");
+      console.error("Error booking appointment:", error);
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to book appointment. Please try again.",
+      );
     } finally {
       setLoading(false);
     }

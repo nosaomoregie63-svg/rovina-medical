@@ -7,7 +7,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import RovinaBranding from "./components/RovinaBranding";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
 
 export default function BookAppointment() {
   const navigate = useNavigate();
@@ -93,7 +93,7 @@ export default function BookAppointment() {
       const response = await axios.get(
         `${API_URL}/doctors?department=${formData.department}`,
       );
-      setDoctors(response.data);
+      setDoctors(response.data?.data || response.data || []);
     } catch (error) {
       console.error("Error fetching doctors:", error);
       toast.error("Failed to load doctors");

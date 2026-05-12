@@ -29,23 +29,37 @@ export default function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const userData = localStorage.getItem("user");
+    const token = localStorage.getItem("adminToken");
+    const userData = localStorage.getItem("adminUser");
 
-    if (!token || !userData) {
+    if (
+      !token ||
+      !userData ||
+      userData === "undefined" ||
+      userData === "null"
+    ) {
       router.push("/admin/login");
       return;
     }
 
-    setUser(JSON.parse(userData));
+    try {
+      setUser(JSON.parse(userData));
+    } catch (error) {
+      console.error("Error parsing admin user data:", error);
+      localStorage.removeItem("adminToken");
+      localStorage.removeItem("adminUser");
+      router.push("/admin/login");
+      return;
+    }
+
     fetchStats();
   }, []);
 
   const fetchStats = async () => {
     try {
       const API_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-      const token = localStorage.getItem("token");
+        import.meta.env.VITE_API_URL || "http://localhost:5001/api";
+      const token = localStorage.getItem("adminToken");
 
       const response = await axios.get(`${API_URL}/appointments/stats`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -280,3 +294,5 @@ export default function AdminDashboard() {
     </div>
   );
 }
+
+

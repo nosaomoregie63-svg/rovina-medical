@@ -16,18 +16,11 @@ export default function Navbar() {
     pathname.startsWith("/admin/");
 
   useEffect(() => {
-    // Check if patient is logged in
     const token = localStorage.getItem("patientToken");
     setIsPatientLoggedIn(!!token);
-  }, []);
+  }, [location.pathname]);
 
   if (isInPortal) return null;
-
-  useEffect(() => {
-    // Check if patient is logged in
-    const token = localStorage.getItem("patientToken");
-    setIsPatientLoggedIn(!!token);
-  }, []);
 
   return (
     <nav className="bg-white shadow-md sticky top-0 z-50">
@@ -108,6 +101,12 @@ export default function Navbar() {
               className="text-gray-700 hover:text-primary transition font-medium"
             >
               Contact
+            </Link>
+            <Link
+              to="/track-appointments"
+              className="text-gray-700 hover:text-primary transition font-medium"
+            >
+              Track Appointments
             </Link>
 
             {/* Portal Buttons */}
@@ -199,6 +198,13 @@ export default function Navbar() {
               onClick={() => setIsOpen(false)}
             >
               Contact
+            </Link>
+            <Link
+              to="/track-appointments"
+              className="block py-3 text-gray-700"
+              onClick={() => setIsOpen(false)}
+            >
+              Track Appointments
             </Link>
 
             <div className="mt-4 space-y-3">

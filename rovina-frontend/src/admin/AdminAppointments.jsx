@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { toast } from "react-toastify";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
 
 export default function AdminAppointments() {
   const navigate = useNavigate();
@@ -51,7 +51,7 @@ export default function AdminAppointments() {
       const response = await axios.get(`${API_URL}/appointments`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setAppointments(response.data);
+      setAppointments(response.data.data || []);
     } catch (error) {
       console.error("Error fetching appointments:", error);
       if (error.response?.status === 401) {
@@ -447,3 +447,5 @@ export default function AdminAppointments() {
     </div>
   );
 }
+
+
