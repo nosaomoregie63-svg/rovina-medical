@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "build": {
+    "command": "npm run build --workspace=rovina-frontend",
+    "outputDirectory": "rovina-frontend/dist"
+  }
+}
