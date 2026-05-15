@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Rovina Medical Diagnostic Services",
   "private": true,
+  "packageManager": "npm@10.6.0",
   "engines": {
     "node": "20.x"
   },
