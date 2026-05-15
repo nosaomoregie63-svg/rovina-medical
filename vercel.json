@@ -1,7 +1,7 @@
 {
   "version": 3,
   "build": {
-    "command": "npm run build --workspace=rovina-frontend",
+    "command": "bash -lc 'if grep -q \"\\\"workspaces\\\"\" package.json 2>/dev/null; then npm run build --workspace=rovina-frontend; else cd rovina-frontend && npm run build; fi'",
     "outputDirectory": "rovina-frontend/dist"
   }
 }
