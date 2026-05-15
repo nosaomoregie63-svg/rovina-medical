@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Rovina Medical Diagnostic Services",
   "private": true,
+  "engines": {
+    "node": "20.x"
+  },
   "workspaces": [
     "rovina-backend",
     "rovina-frontend"
