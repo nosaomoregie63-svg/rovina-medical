@@ -2,7 +2,7 @@
   "name": "rovina-medical-frontend",
   "version": "1.0.0",
   "engines": {
-    "node": "20.x"
+    "node": "22.x"
   },
   "description": "Rovina Medical Diagnostic Services - Frontend",
   "private": true,
